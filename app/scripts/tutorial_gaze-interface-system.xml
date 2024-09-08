@@ -1,0 +1,41 @@
+<application>
+
+  <name>Tutorial on Gaze Interface System</name>
+
+  <module>
+      <name>yarplogger</name>
+      <parameters>--start</parameters>
+      <node>localhost</node>
+  </module>
+
+  <module>
+      <name>gzserver</name>
+      <parameters>-s libgazebo_yarp_clock.so tutorial_gaze-interface.sdf</parameters>
+      <dependencies>
+         <port timeout="20">/yarplogger</port>
+      </dependencies>
+      <environment>YARP_FORWARD_LOG_ENABLE=1</environment>
+      <node>localhost</node>
+  </module>
+
+  <module>
+      <name>gzclient</name>
+      <node>localhost</node>
+  </module>
+
+  <module>
+      <name>iKinGazeCtrl</name>
+      <parameters>--context gazeboCartesianControl --from iKinGazeCtrl.ini</parameters>
+      <dependencies>
+          <port timeout="20">/yarplogger</port>
+          <port timeout="20">/icubSim/torso/state:o</port>
+          <port timeout="20">/icubSim/head/state:o</port>
+      </dependencies>
+      <environment>YARP_FORWARD_LOG_ENABLE=1;YARP_CLOCK=/clock</environment>
+      <ensure>
+          <wait>2</wait>
+      </ensure>
+      <node>localhost</node>
+  </module>
+
+</application>

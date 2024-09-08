@@ -1,0 +1,76 @@
+<application>
+    <name>Fixture for Tutorial on Gaze Interface</name>
+    <description>A fixture to prepare components required for the tutorial</description>
+    <version>1.0</version>
+    <authors>
+        <author email="ugo.pattacini@iit.it">Ugo Pattacini</author>
+    </authors>
+    <module>
+        <name>gzserver</name>
+        <parameters>-s libgazebo_yarp_clock.so tutorial_gaze-interface.sdf</parameters>
+        <node>testnode</node>
+    </module>
+    <module>
+        <name>gzclient</name>
+        <node>testnode</node>
+    </module>
+    <module>
+        <name>iKinGazeCtrl</name>
+        <parameters>--context gazeboCartesianControl --from iKinGazeCtrl.ini</parameters>
+        <dependencies>
+            <port timeout="10">/icubSim/torso/state:o</port>
+            <port timeout="10">/icubSim/head/state:o</port>
+        </dependencies>
+        <ensure>
+            <wait>2</wait>
+        </ensure>
+        <environment>YARP_CLOCK=/clock</environment>
+        <node>testnode</node>
+    </module>
+    <module>
+        <name>tutorial_gaze-interface-detector</name>
+        <dependencies>
+            <port timeout="10">/icubSim/cam/left/rgbImage:o</port>
+        </dependencies>
+        <ensure>
+            <wait>3</wait>
+        </ensure>
+        <environment>YARP_CLOCK=/clock</environment>
+        <node>testnode</node>
+    </module>
+    <module>
+        <name>tutorial_gaze-interface-tracker</name>
+        <dependencies>
+            <port timeout="10">/iKinGazeCtrl/rpc</port>
+            <port timeout="10">/detector/target</port>
+        </dependencies>
+        <ensure>
+            <wait>3</wait>
+        </ensure>
+        <environment>YARP_CLOCK=/clock</environment>
+        <node>testnode</node>
+    </module>
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /viewer --x 10 --y 10 --compact</parameters>
+        <dependencies>
+            <port timeout="10">/detector/image/out</port>
+        </dependencies>
+        <node>testnode</node>
+    </module>
+    <connection>
+        <from>/icubSim/cam/left/rgbImage:o</from>
+        <to>/detector/image/in</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+    <connection>
+        <from>/detector/image/out</from>
+        <to>/viewer</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+    <connection>
+        <from>/detector/target</from>
+        <to>/tracker/target:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+</application>
