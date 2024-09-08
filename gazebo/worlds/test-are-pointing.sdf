@@ -1,8 +1,7 @@
 <?xml version="1.0" ?>
 <sdf version="1.7">
   <world name="default">
-    <plugin name="mover" filename='libtutorial_gaze-interface-mover.so'/>
-
+    
     <include>
       <uri>model://sun</uri>
     </include>
@@ -25,8 +24,9 @@
     </model>
 
     <include>
-      <uri>model://tutorial_gaze-interface-ball</uri>
+      <uri>model://test-are-pointing-ball</uri>
       <pose>-1 0 1 0 0 0</pose>
+      <plugin name="mover" filename='libtest-are-pointing-mover.so'/>
     </include>
 
     <gui fullscreen='0'>

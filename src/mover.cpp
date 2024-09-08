@@ -11,47 +11,54 @@
 #include <gazebo/common/Events.hh>
 #include <ignition/math/Pose3.hh>
 
+#include <yarp/os/Bottle.h>
+#include <yarp/os/BufferedPort.h>
+#include <yarp/os/LogStream.h>
+
 namespace gazebo {
 
 /******************************************************************************/
-class Mover : public gazebo::WorldPlugin
+class Mover : public gazebo::ModelPlugin
 {
-    gazebo::physics::WorldPtr world;
-    gazebo::physics::ModelPtr ball;
+    gazebo::physics::ModelPtr model;
     gazebo::event::ConnectionPtr renderer_connection;
-    ignition::math::Pose3d init_pose;
-    double t0;
+    yarp::os::BufferedPort<yarp::os::Bottle> port;
+    ignition::math::Pose3d robot_pose;
 
     /**************************************************************************/
-    void onWorld() {
-        const auto t = world->SimTime().Double() - t0;
-        const auto phi = 2. * M_PI * (t / 10.);
-        
-        const auto x = .4 * std::cos(phi);
-        const auto y = .2 * std::sin(phi);
-        const auto z = y;
-
-        const auto& p = init_pose.Pos();
-        const auto& q = init_pose.Rot();
-        ignition::math::Pose3d pose(p.X() + x, p.Y() + y, p.Z() + z,
-                                    q.W(), q.X(), q.Y(), q.Z());
-        ball->SetWorldPose(pose);
+    void onWorldFrame() {
+        if (auto* b = port.read(false)) {
+            if (b->size() >= 3) { 
+                const auto x = b->get(0).asFloat64();
+                const auto y = b->get(1).asFloat64();
+                const auto z = b->get(2).asFloat64() + 0.63;
+                const auto& rot = model->WorldPose().Rot();
+                ignition::math::Pose3d new_pose(x, y, z, rot.W(), rot.X(), rot.Y(), rot.Z());
+                model->SetWorldPose(new_pose);
+            }
+        }
     }
 
 public:
     /**************************************************************************/
-    void Load(gazebo::physics::WorldPtr world, sdf::ElementPtr) override {
-        this->world = world;
-        ball = world->ModelByName("tutorial_gaze-interface-ball");
-
-        auto bind = std::bind(&Mover::onWorld, this);
+    void Load(gazebo::physics::ModelPtr model, sdf::ElementPtr) override {
+        this->model = model;
+        port.open("/" + model->GetName());
+        auto bind = std::bind(&Mover::onWorldFrame, this);
         renderer_connection = gazebo::event::Events::ConnectWorldUpdateBegin(bind);
 
-        init_pose = ball->WorldPose();
-        t0 = world->SimTime().Double();
+        const auto& world = model->GetWorld();
+        const auto& robot = world->ModelByName("iCub");
+        robot_pose = robot->WorldPose();    // not working
+    }
+
+    virtual ~Mover() {
+        if (!port.isClosed()) {
+            port.close();
+        }
     }
 };
 
 }
 
-GZ_REGISTER_WORLD_PLUGIN(gazebo::Mover)
+GZ_REGISTER_MODEL_PLUGIN(gazebo::Mover)

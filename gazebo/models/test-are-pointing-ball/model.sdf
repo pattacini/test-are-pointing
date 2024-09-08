@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.7">
-  <model name="tutorial_gaze-interface-ball">
+  <model name="test-are-pointing-ball">
     <static>false</static>
     <link name="link">
         <gravity>0</gravity>

@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 # produce the cmake var PROJECT_NAME
-project(tutorial_gaze-interface)
+project(test-are-pointing)
 
 # mandatory use of these packages
 find_package(YARP 3.5.1 REQUIRED)
@@ -25,20 +25,8 @@ add_subdirectory(gazebo)
 add_library(${PROJECT_NAME}-mover SHARED ${CMAKE_SOURCE_DIR}/src/mover.cpp)
 target_compile_definitions(${PROJECT_NAME}-mover PRIVATE _USE_MATH_DEFINES)
 target_include_directories(${PROJECT_NAME}-mover PRIVATE ${GAZEBO_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME}-mover PRIVATE ${GAZEBO_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}-mover PRIVATE ${GAZEBO_LIBRARIES} YARP::YARP_os)
 install(TARGETS ${PROJECT_NAME}-mover LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT shlib)
-
-# detector
-add_executable(${PROJECT_NAME}-detector ${CMAKE_SOURCE_DIR}/src/detector.cpp)
-target_compile_definitions(${PROJECT_NAME}-detector PRIVATE _USE_MATH_DEFINES)
-target_link_libraries(${PROJECT_NAME}-detector PRIVATE ${YARP_LIBRARIES})
-install(TARGETS ${PROJECT_NAME}-detector DESTINATION bin)
-
-# tracker
-add_executable(${PROJECT_NAME}-tracker ${CMAKE_SOURCE_DIR}/src/tracker.cpp)
-target_compile_definitions(${PROJECT_NAME}-tracker PRIVATE _USE_MATH_DEFINES)
-target_link_libraries(${PROJECT_NAME}-tracker PRIVATE ${YARP_LIBRARIES})
-install(TARGETS ${PROJECT_NAME}-tracker DESTINATION bin)
 
 # generate ad-hoc project to perform "make uninstall"
 icubcontrib_add_uninstall_target()
