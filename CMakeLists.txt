@@ -35,7 +35,7 @@ file(GLOB scripts ${CMAKE_SOURCE_DIR}/app/scripts/*.xml)
 yarp_install(FILES ${scripts} DESTINATION ${ICUBCONTRIB_APPLICATIONS_INSTALL_DIR})
 
 # apply patch
-file(GLOB patch_ini ${PROJECT_SOURCE_DIR}/patch/*.ini)
-add_custom_target(apply_patch COMMAND ${CMAKE_COMMAND} -E copy_if_different ${patch_ini}
-                  "/robotology-superbuild-install/share/iCub/conf_manual/iCubGazeboV2_5_visuomanip")
-add_dependencies(${PROJECT_NAME}-mover apply_patch)
+#file(GLOB patch_ini ${PROJECT_SOURCE_DIR}/patch/*.ini)
+#add_custom_target(apply_patch COMMAND ${CMAKE_COMMAND} -E copy_if_different ${patch_ini}
+#                  "/robotology-superbuild-install/share/iCub/conf_manual/iCubGazeboV2_5_visuomanip")
+#add_dependencies(${PROJECT_NAME}-mover apply_patch)
