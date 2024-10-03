@@ -1,4 +1,4 @@
-image: ghcr.io/vvv-school/gitpod:master
+image: ghcr.io/vvv-school/gitpod
 ports:
 - port: 6080
   onOpen: notify
